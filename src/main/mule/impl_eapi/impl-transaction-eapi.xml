@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="fetchTransactionDetails_Flow" doc:id="fc964546-04bf-4d7a-a5a0-4f9f02bcac74" >
+		<scheduler doc:name="Scheduler" doc:id="fe820fb6-84da-41c1-83c6-af483b4b8f5f" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="start logger" doc:id="cc5d3fab-05e8-473d-9892-ef1ab0800a94" message="start logger" />
+		<http:request method="GET" doc:name="Requesting process transaction flow" doc:id="52ad34c7-a5c4-46c2-a28a-99a6ce9e6fb1" path="${http.request.transactionPath}" responseTimeout="8000000" config-ref="HTTP_Request_configuration">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"transactionDate" : attributes.queryParams.transactionDate
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="printing message" doc:id="8cdbb41f-17d9-46ec-9d5a-5024ee77d216" message='#[payload]'/>
+		<logger level="INFO" doc:name="end logger" doc:id="ca0ad1cb-78dd-4a4d-ac74-83897c0b7cfd" message="end logger" />
+	</flow>
+	
+</mule>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="transactionReport_Flow" doc:id="f59d7845-d4fa-44dc-9384-cc909e7fdc51" >
+		<scheduler doc:name="Scheduler" doc:id="a33aa0a8-7444-424b-b8ef-d6224a3973a2" >
+			<scheduling-strategy >
+				<cron expression="0 0/1 * 1/1 * ? *" timeZone="GMT+5:30" />
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Start logger" doc:id="26d4985c-80ea-438f-b04f-75d6a5842a16" message="start logger" />
+		<ee:transform doc:name="Transform Message" doc:id="cda78e3e-de6d-4c74-984a-f345fc7b28bf" >
+			<ee:message >
+				<ee:set-attributes ><![CDATA[%dw 2.0
+output application/json
+---
+"queryParams" :
+{
+	"transactionDate" : "2022-10-0to2022-10-30"
+}]]></ee:set-attributes>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="MetaData" doc:id="a1d2a9fb-69d1-4035-8c37-105a937efba6">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="startDate"><![CDATA[%dw 2.0
+output application/json
+---
+((attributes.queryParams.transactionDate splitBy  "to") [0])]]></ee:set-variable>
+				<ee:set-variable variableName="endDate"><![CDATA[%dw 2.0
+output application/json
+---
+((attributes.queryParams.transactionDate splitBy  "to") [-1])]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Requesting process transactionReport flow" doc:id="97122a68-f62b-4ae7-92f3-42a99da97566" path="${http.request.transactionReportPath}" responseTimeout="8000000" config-ref="HTTP_Request_configuration">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"transactionDate" : attributes.queryParams.transactionDate
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="fd0d6b8c-be90-46a5-afd3-7bd9da6d2d39" message='#[payload]'/>
+		<logger level="INFO" doc:name="End logger" doc:id="1e06a27e-be73-434b-a45e-4f241725435e" message="end logger" />
+	</flow>
+	
+</mule>

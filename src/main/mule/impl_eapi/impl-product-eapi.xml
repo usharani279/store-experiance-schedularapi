@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	 <sub-flow name="inserting-ProductData-flow" doc:id="85fb07b9-c34f-42da-9efc-cac595429d58" >
+		<logger level="INFO" doc:name="start logger" doc:id="6a862fbd-71d8-4206-858d-bedfdd90ae2b" message="start logger"/>
+		<ee:transform doc:name="inputData" doc:id="d485cbdd-6224-484b-a477-b2a31c336a2e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Requesting process product flow" doc:id="a3846fd2-f0ca-4203-929c-cd8f26ec7bbb" path="${http.request.productPath}" responseTimeout="80000000" config-ref="HTTP_Request_configuration">
+			<http:body ><![CDATA[#[vars.inputData]]]></http:body>
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="19a7451c-e099-4ff5-95f6-56eac3f8cd88" message="end logger"/>
+	</sub-flow>
+	<sub-flow name="fetching-ProductData-flow" doc:id="c782c37e-6fb9-4315-a30a-e9c120d1ceba" >
+		<logger level="INFO" doc:name="start logger" doc:id="3d62ec86-8bcd-44e1-b6b2-7cd9027aad91" message="start logger"/>
+		<http:request method="GET" doc:name="Requesting process product flow" doc:id="40834ffe-16eb-414c-9bb7-c861534e257f" path="${http.request.productPath}" responseTimeout="7000000" config-ref="HTTP_Request_configuration"/>
+		<logger level="INFO" doc:name="end logger" doc:id="478c8a3f-3e4e-44f2-bdf8-be4f9eb90298" message="end logger"/>
+	</sub-flow>
+	<sub-flow name="updating-Product-flow" doc:id="f9a074e6-08d8-4503-9bed-6c4f58e63929" >
+		<logger level="INFO" doc:name="start logger" doc:id="9c08a573-27e7-448c-a1d7-f70cb0462fa5" message="start logger"/>
+		<ee:transform doc:name="metaData" doc:id="8b6008ff-0879-4dc4-b3c8-8484ce54666f" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="inputData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.productId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="PUT" doc:name="Requesting process product flow" doc:id="13e47804-b724-49c8-b117-f82af6ab5e69" path="${http.request.productPath}" responseTimeout="8000000" config-ref="HTTP_Request_configuration">
+			<http:body ><![CDATA[#[vars.inputData]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"productId" : vars.id
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="b8462d4a-47ba-4ac1-8eb7-6176dc850fa3" message="end logger"/>
+	</sub-flow>
+	<sub-flow name="delete-Product-flow" doc:id="99d25b7e-98d9-4b78-b7c7-a477e486cf7f" >
+		<logger level="INFO" doc:name="start logger" doc:id="7cf58bcf-a5c1-4985-ba4b-467d6c8b08e3" message="start logger"/>
+		<ee:transform doc:name="metaData" doc:id="d98b683b-d1da-4a85-9938-f325062335b0" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.productId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="DELETE" doc:name="Requesting process product flow" doc:id="376f355d-8373-4da3-a888-a25810088dc8" path="${http.request.productPath}" responseTimeout="#[8000000]" config-ref="HTTP_Request_configuration">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"productId" : vars.id
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="b625519e-e68d-49b6-b304-2d96b9d76405" message="end logger"/>
+	</sub-flow>
+	</mule>

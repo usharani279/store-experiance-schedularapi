@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <apikit:config name="store-api-config" api="store-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="store-api-main">
+        <http:listener path="/api/*" config-ref="store-api-httpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="store-api-config" />
+		<error-handler ref="error-e-Error_Handler" />
+        
+    </flow>
+    <flow name="put:\customer:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="70828f6e-f083-4e29-904b-ef88b12cf5ea" message="Start logger"/>
+        <flow-ref doc:name="calling updating-Customer-flow" doc:id="fd01b9d9-2685-40a0-96db-99cd2bc84c08" name="updating-Customer-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="cdeb7806-4f84-4015-a031-24b920ddbfe7" message="End logger"/>
+    </flow>
+    <flow name="put:\product:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="d9bad00b-a311-42dc-a459-dfdcc658a39f" message="Start logger"/>
+        <flow-ref doc:name="calling updating-Product-flow" doc:id="028b744f-82a7-4e0b-9b85-f61b38dc09fe" name="updating-Product-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="c904a03d-38d6-47e4-935c-c83c1b59a64a" message="End logger"/>
+    </flow>
+    <flow name="delete:\customer:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="6a7cf86a-4437-49c4-a3ca-acecb3455cf1" message="Start logger"/>
+        <flow-ref doc:name="calling deleteCustomer_Flow" doc:id="d510774c-1242-4378-b9e8-865cc24fc57c" name="deleteCustomer_Flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="b0c0f945-1999-4633-a1b5-874bbe601a6f" message="End logger"/>
+    </flow>
+    <flow name="delete:\product:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="d63f4a5f-6b7b-40be-af9f-e3033ae182aa" message="Start logger"/>
+        <flow-ref doc:name="calling delete-Product-flow" doc:id="759058e2-a35d-46d7-a3a3-a7b0dca5670c" name="delete-Product-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="f0da1853-a3de-48f4-b992-d144e377286c" message="End logger"/>
+    </flow>
+    <flow name="get:\customer:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="f8ad2829-541b-4579-aa1d-e3a7b5167b9b" message="Start logger"/>
+        <flow-ref doc:name="calling fetching-customerDetails-flow" doc:id="b42294bd-cf91-41ba-8099-53d3e65f2bd6" name="fetching-customerDetails-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="e2c7ba65-66a8-42fb-aacb-f399262ce43b" message="End logger"/>
+    </flow>
+    <flow name="get:\product:store-api-config">
+       <logger level="INFO" doc:name="Start logger" doc:id="495bcc1d-62aa-4491-abf1-daeb2ab97291" message="Start logger"/>
+        <flow-ref doc:name="calling fetching-ProductData-flow" doc:id="7318d221-a282-4011-8e55-f87a06c138ae" name="fetching-ProductData-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="740b2d98-3382-498e-9f4d-038997369c21" message="End logger"/>
+    </flow>
+    <flow name="get:\transaction:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="16c9cf3c-69cc-4050-a0e5-0a8b9447a493" message="Start logger"/>
+        <flow-ref doc:name="calling fetchTransactionDetails_Flow" doc:id="54755414-d874-445b-a7fd-7c720fd0fc2c" name="fetchTransactionDetails_Flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="61c52224-4bbb-4737-8bea-cd7801473345" message="End logger"/>
+    </flow>
+    <flow name="post:\customer:application\json:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="b449512d-69cd-4148-a5de-2eab52dfd51f" message="Start logger"/>
+        <flow-ref doc:name="calling insertingCustomer-flow" doc:id="c27b8bb6-756a-4122-8db7-e0b5a6a651ec" name="insertingCustomer-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="30202ac0-ad06-4dba-bee0-305b431f821e" message="End logger"/>
+    </flow>
+    <flow name="post:\product:application\json:store-api-config">
+        <logger level="INFO" doc:name="Start logger" doc:id="9561e901-5589-43a7-95d8-1512da3ed356" message="Start logger"/>
+        <flow-ref doc:name="calling inserting-ProductData-flow" doc:id="c74aea19-1325-44bb-913b-62479f4b63cb" name="inserting-ProductData-flow" />
+        <logger level="INFO" doc:name="End logger" doc:id="9eaa0df7-4890-4f32-ad6a-0883413b1a9a" message="End logger"/>
+    </flow>
+    <flow name="get:\transactionReport:store-api-config">
+		<logger level="INFO" doc:name="Start logger" doc:id="ed1ae261-e086-46a6-b886-a96ac6d72314" message="Start logger"/>
+		<flow-ref doc:name="calling transactionReport_Flow" doc:id="d0b40ad7-4286-49f1-beb5-01c9d29d151b" name="transactionReport_Flow"/>
+        <logger level="INFO" doc:name="End logger" doc:id="e752773a-9cbb-4344-94e2-ad6247643b35" message="End logger"/>
+    </flow>
+</mule>

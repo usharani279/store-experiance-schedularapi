@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_f89cd585_f959_4939_94d2_8ac7fbaaab8a_Input_Payload = {|
+  customerId: Number, 
+  customerName: String, 
+  phoneNum: Number, 
+  address: String
+|}
+

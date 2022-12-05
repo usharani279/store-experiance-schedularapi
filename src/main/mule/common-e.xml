@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<http:listener-config name="store-api-httpListenerConfig" doc:name="HTTP Listener config" doc:id="79a5a664-8347-4611-9ddb-cc878b18716b" >
+		<http:listener-connection host="${http.listener.host}" port="${secure::http.listener.port}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="4c3c4b6e-a55a-4930-a581-0c6395d51d00" >
+		<http:request-connection host="${secure::http.request.host}" port="${secure::http.request.port}" connectionIdleTimeout="3000000" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="ac3e1250-3d8d-4374-b12c-ee90ff17976c" file="properties/${env}.yaml" />
+	<configuration doc:name="Configuration" doc:id="ed027722-4936-4086-80dd-4a571ef9be06" defaultErrorHandler-ref="error-e-Error_Handler" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="3bde9597-489d-4e6f-93b5-50a23b5a4d21" file="secure.yaml" key="${key}"/>
+</mule>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="insertingCustomer-flow" doc:id="14063ddb-6cbe-4417-b928-45ec0c311e6f" >
+		<logger level="INFO" doc:name="start logger" doc:id="9f604bed-5b4f-4cfb-91e9-c022fae61082" message='#["start logger"]'/>
+		<ee:transform doc:name="payload from process flow" doc:id="da67d66d-d532-4baf-bf42-118372af802d" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Requesting process customer  flow" doc:id="2d9bb2ca-2c08-4c13-9751-4dd3c18f575e" path="${http.request.customerPath}" responseTimeout="70000000" config-ref="HTTP_Request_configuration">
+			<http:body ><![CDATA[#[vars.inputData]]]></http:body>
+		</http:request>
+		<logger level="INFO" doc:name="end Logger" doc:id="000ff4de-893d-40a9-8fb6-5c173a75c0a3" message='#["end logger"]'/>
+	
+</sub-flow>
+	<sub-flow name="fetching-customerDetails-flow" doc:id="12cb0d4c-c6e2-4a90-9870-ee43f3f0e058" >
+		<logger level="INFO" doc:name="start logger" doc:id="ae013abb-45e1-45e6-a5df-8d7fa493730d" message='#["start logger"]' />
+		<http:request method="GET" doc:name="Requesting process customer  flow" doc:id="1ca0ac6b-ca6b-43e3-9ca8-daed95ceb0d8" path="${http.request.customerPath}" responseTimeout="70000000" config-ref="HTTP_Request_configuration">
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="b58732ce-12c0-4a99-915d-c7cb1abd6b6f" message="end logger"/>
+	</sub-flow>
+	<sub-flow name="updating-Customer-flow" doc:id="ccd79de9-2850-4d6d-8a86-2b351c8a9f17" >
+		<logger level="INFO" doc:name="start logger" doc:id="0189af5b-4fab-4a93-bd21-d8fbb0863709" message='#["start logger"]'/>
+		<ee:transform doc:name="metaData" doc:id="6746b837-0b1b-4c38-9b92-279e7f1c32bf" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inputData" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.customerId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Requesting process customer  flow" doc:id="3d275185-a5ce-4469-b987-e2bca46ab065" path="${http.request.customerPath}" responseTimeout="70000000" config-ref="HTTP_Request_configuration">
+			<http:body ><![CDATA[#[vars.inputData]]]></http:body>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	customerId : vars.id
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="413436ec-d4dc-4287-988c-61a0005706e2" message="end logger"/>
+	</sub-flow>
+	<sub-flow name="deleteCustomer_Flow" doc:id="61b83320-d3d8-4e50-9518-a091b4d8c1b3" >
+		<logger level="INFO" doc:name="start logger" doc:id="0b5c749f-b05d-4ea5-9cf5-8d0950a86f33" message='#["start logger"]'/>
+		<ee:transform doc:name="metaData" doc:id="d182cb83-9361-4ca4-bba1-6c57e9906944" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.customerId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Requesting process customer  flow" doc:id="d8c83ad3-a7ba-44d9-a739-3e3953b01496" path="${http.request.customerPath}" responseTimeout="70000000" config-ref="HTTP_Request_configuration">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	customerId : vars.id
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="end logger" doc:id="ae917c64-96c6-484b-bb8e-d47f68d3f666" message="end logger"/>
+	</sub-flow>
+	</mule>
